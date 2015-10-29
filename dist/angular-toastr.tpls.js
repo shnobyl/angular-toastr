@@ -161,17 +161,27 @@
         newToast.open.resolve();
       }
 
+      function fixInitToast() {
+        if (typeof newToast.scope.init === 'function') {
+          newToast.scope.init();
+        } else {
+          setTimeout(function () {
+            newToast.scope.init();
+          }, 0);
+        }
+      }
+
       newToast.open.promise.then(function() {
         _createOrGetContainer(options).then(function() {
           newToast.isOpened = true;
           if (options.newestOnTop) {
             $animate.enter(newToast.el, container).then(function() {
-              newToast.scope.init();
+              fixInitToast()
             });
           } else {
             var sibling = container[0].lastChild ? angular.element(container[0].lastChild) : null;
             $animate.enter(newToast.el, container, sibling).then(function() {
-              newToast.scope.init();
+              fixInitToast()
             });
           }
         });
